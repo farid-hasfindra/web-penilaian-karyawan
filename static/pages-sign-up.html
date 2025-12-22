@@ -35,21 +35,21 @@
 						<div class="card">
 							<div class="card-body">
 								<div class="m-sm-3">
-									<form>
+									<form id="registerForm">
 										<div class="mb-3">
 											<label class="form-label">Nama Lengkap</label>
-											<input class="form-control form-control-lg" type="text" name="name" placeholder="Masukan nama lengkap" />
+											<input class="form-control form-control-lg" type="text" id="name" name="name" placeholder="Masukan nama lengkap" required />
 										</div>
 										<div class="mb-3">
 											<label class="form-label">Email</label>
-											<input class="form-control form-control-lg" type="email" name="email" placeholder="Masukan email" />
+											<input class="form-control form-control-lg" type="email" id="email" name="email" placeholder="Masukan email" required />
 										</div>
 										<div class="mb-3">
 											<label class="form-label">Password</label>
-											<input class="form-control form-control-lg" type="password" name="password" placeholder="Masukan password" />
+											<input class="form-control form-control-lg" type="password" id="password" name="password" placeholder="Masukan password" required />
 										</div>
 										<div class="d-grid gap-2 mt-3">
-											<a href="pages-sign-in.html" class="btn btn-lg btn-primary">Daftar</a>
+											<button type="submit" class="btn btn-lg btn-primary">Daftar</button>
 										</div>
 									</form>
 								</div>
@@ -65,6 +65,32 @@
 	</main>
 
 	<script src="js/app.js"></script>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Simulate Database with LocalStorage
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            
+            // Check if user exists
+            if (users.find(u => u.email === email)) {
+                alert('Email sudah terdaftar!');
+                return;
+            }
+
+            // Add new user
+            users.push({ name, email, password });
+            localStorage.setItem('users', JSON.stringify(users));
+
+            alert('Registrasi Berhasil! Silakan Login.');
+            window.location.href = 'pages-sign-in.html';
+        });
+    </script>
 
 </body>
 

@@ -35,14 +35,14 @@
 						<div class="card">
 							<div class="card-body">
 								<div class="m-sm-3">
-									<form>
+									<form id="loginForm">
 										<div class="mb-3">
 											<label class="form-label">Email</label>
-											<input class="form-control form-control-lg" type="email" name="email" placeholder="Enter your email" />
+											<input class="form-control form-control-lg" type="email" id="email" name="email" placeholder="Masukan email" required />
 										</div>
 										<div class="mb-3">
 											<label class="form-label">Password</label>
-											<input class="form-control form-control-lg" type="password" name="password" placeholder="Enter your password" />
+											<input class="form-control form-control-lg" type="password" id="password" name="password" placeholder="Masukan password" required />
 										</div>
 										<div>
 											<div class="form-check align-items-center">
@@ -51,8 +51,7 @@
 											</div>
 										</div>
 										<div class="d-grid gap-2 mt-3">
-											<a href="index.html" class="btn btn-lg btn-primary">Login sebagai Admin</a>
-                                            <a href="karyawan-dashboard.html" class="btn btn-lg btn-success">Login sebagai Karyawan</a>
+											<button type="submit" class="btn btn-lg btn-primary">Masuk</button>
 										</div>
 									</form>
 								</div>
@@ -69,6 +68,40 @@
 
 	<script src="js/app.js"></script>
 
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+
+            // 1. Check Admin Credentials (Hardcoded)
+            if (email === 'admin@gmail.com') {
+                if (password === 'admin123') {
+                    // Admin Login Success
+                    localStorage.setItem('currentUser', JSON.stringify({ name: 'Admin', role: 'admin' }));
+                    window.location.href = 'index.html';
+                } else {
+                    // Admin Email but Wrong Password
+                    alert('Password salah untuk akun Admin!');
+                }
+                return;
+            }
+
+            // 2. Check Employee Credentials (from LocalStorage "Database")
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            let user = users.find(u => u.email === email && u.password === password);
+
+            if (user) {
+                // Employee Login Success
+                localStorage.setItem('currentUser', JSON.stringify({ name: user.name, role: 'karyawan' }));
+                window.location.href = 'karyawan-dashboard.html';
+            } else {
+                // Not found in DB or wrong password
+                alert('Email atau Password salah! Pastikan Anda sudah mendaftar.');
+            }
+        });
+    </script>
 </body>
 
 </html>
