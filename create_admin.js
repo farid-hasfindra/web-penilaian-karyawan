@@ -14,23 +14,35 @@ const adminUser = {
     role_id: 1
 };
 
-const query = `
-    INSERT INTO users (username, email, password, role_id) 
-    SELECT ?, ?, ?, ? 
-    WHERE NOT EXISTS (
-        SELECT email FROM users WHERE email = ?
-    )
-`;
+// Ensure roles exist
+db.query("INSERT IGNORE INTO roles (role_id, role_name) VALUES (1, 'Admin'), (2, 'Karyawan')", (err) => {
+    if (err) console.error("Error ensuring roles:", err);
 
-db.query(query, [adminUser.username, adminUser.email, adminUser.password, adminUser.role_id, adminUser.email], (err, result) => {
-    if (err) {
-        console.error('Error creating admin:', err);
-    } else {
-        if (result.affectedRows > 0) {
-            console.log('Admin account created successfully.');
-        } else {
-            console.log('Admin account already exists.');
-        }
-    }
-    process.exit();
+    // Proceed to check/create user
+    checkUser();
 });
+
+function checkUser() {
+    db.query('SELECT * FROM users WHERE email = ?', [adminUser.email], (err, results) => {
+        if (err) {
+            console.error('Error checking user:', err);
+            process.exit(1);
+            return;
+        }
+
+        if (results.length > 0) {
+            console.log('Admin user already exists.');
+            process.exit();
+        } else {
+            const query = 'INSERT INTO users (username, email, password, role_id, status) VALUES (?, ?, ?, ?, ?)';
+            db.query(query, [adminUser.username, adminUser.email, adminUser.password, adminUser.role_id, 'Active'], (err, res) => {
+                if (err) {
+                    console.error('Error creating admin:', err);
+                } else {
+                    console.log('Admin user created successfully.');
+                }
+                process.exit();
+            });
+        }
+    });
+}

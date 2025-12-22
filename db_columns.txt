@@ -1,0 +1,7 @@
+[
+  "user_id",
+  "role_id",
+  "username",
+  "password",
+  "status"
+]

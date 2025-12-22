@@ -39,12 +39,7 @@ app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
 
     // Check in Users table (Joined with Roles)
-    const query = `
-        SELECT u.*, r.role_name 
-        FROM users u 
-        JOIN roles r ON u.role_id = r.role_id 
-        WHERE u.email = ?
-    `;
+    const query = "SELECT users.*, roles.role_name FROM users JOIN roles ON users.role_id = roles.role_id WHERE users.email = ?";
 
     db.query(query, [email], (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
@@ -78,9 +73,9 @@ app.post('/api/register', (req, res) => {
     const roleId = 2;
 
     // Insert into users
-    const query = 'INSERT INTO users (username, email, password, role_id) VALUES (?, ?, ?, ?)';
+    const query = 'INSERT INTO users (username, email, password, role_id, status) VALUES (?, ?, ?, ?, ?)';
 
-    db.query(query, [name, email, password, roleId], (err, result) => {
+    db.query(query, [name, email, password, roleId, 'Active'], (err, result) => {
         if (err) {
             if (err.code === 'ER_DUP_ENTRY') {
                 return res.status(400).json({ error: 'Email already exists' });
@@ -173,8 +168,8 @@ app.get('/api/employees', (req, res) => {
 app.post('/api/employees', (req, res) => {
     const { name, email, password } = req.body;
     const roleId = 2; // Karyawan
-    const query = 'INSERT INTO users (username, email, password, role_id) VALUES (?, ?, ?, ?)';
-    db.query(query, [name, email, password, roleId], (err, result) => {
+    const query = 'INSERT INTO users (username, email, password, role_id, status) VALUES (?, ?, ?, ?, ?)';
+    db.query(query, [name, email, password, roleId, 'Active'], (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ message: 'Employee added successfully', id: result.insertId });
     });
