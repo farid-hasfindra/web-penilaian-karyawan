@@ -100,34 +100,10 @@
                                                 <th>Detail</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Q4 2024</td>
-                                                <td>05/01/2025</td>
-                                                <td>90</td>
-                                                <td>85</td>
-                                                <td>88</td>
-                                                <td><strong>88.5</strong></td>
-                                                <td><span class="badge bg-success">Selesai</span></td>
-                                                <td>
-                                                    <a href="#" class="btn btn-sm btn-info text-white">Lihat Detail</a>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Q3 2024</td>
-                                                <td>05/10/2024</td>
-                                                <td>80</td>
-                                                <td>80</td>
-                                                <td>85</td>
-                                                <td><strong>82.0</strong></td>
-                                                <td><span class="badge bg-success">Selesai</span></td>
-                                                <td>
-                                                    <a href="#" class="btn btn-sm btn-info text-white">Lihat Detail</a>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-								</div>
+									<tbody id="reportTableBody">
+                                        <!-- Populated by JS -->
+									</tbody>
+								</table>
 							</div>
 						</div>
 					</div>
@@ -152,12 +128,53 @@
 	<script src="js/app.js"></script>
 
 	<script>
-        // Load User Session
-        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        if (currentUser) {
+        document.addEventListener("DOMContentLoaded", function() {
+            // Load User Session
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (!currentUser) {
+                window.location.href = 'pages-sign-in.html';
+                return;
+            }
+
             const nameDisplay = document.getElementById('userNameDisplay');
             if(nameDisplay) nameDisplay.innerText = currentUser.name;
-        }
+
+            // Fetch Assessment History
+            fetch(`http://localhost:3000/api/employees/${currentUser.id}/assessments`)
+                .then(res => res.json())
+                .then(data => {
+                    const tableBody = document.getElementById('reportTableBody');
+                    tableBody.innerHTML = '';
+                    
+                    if (data.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="8" class="text-center">Belum ada penilaian</td></tr>';
+                        return;
+                    }
+
+                    data.forEach(item => {
+                        const d = new Date(item.tanggal_penilaian);
+                        const dateStr = d.toLocaleDateString('id-ID');
+
+                        let row = `
+                            <tr>
+                                <td>${item.nama_periode}</td>
+                                <td>${dateStr}</td>
+                                <td>-</td> <!-- Detail scores not in basic query yet, placeholder -->
+                                <td>-</td>
+                                <td>-</td>
+                                <td><strong>${item.total_nilai}</strong></td>
+                                <td><span class="badge bg-success">Selesai</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-info text-white" onclick="alert('Detail feature coming soon!')">Lihat Detail</button>
+                                </td>
+                            </tr>
+                        `;
+                        tableBody.innerHTML += row;
+                    });
+                })
+                .catch(err => console.error('Error fetching assessments:', err));
+        });
     </script>
 </body>
 

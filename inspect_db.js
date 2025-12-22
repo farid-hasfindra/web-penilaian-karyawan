@@ -1,5 +1,4 @@
 const mysql = require('mysql2');
-const fs = require('fs');
 
 const db = mysql.createPool({
     host: 'localhost',
@@ -8,12 +7,12 @@ const db = mysql.createPool({
     database: 'db_sistem_penilaian_kinerja'
 });
 
-db.query('SHOW COLUMNS FROM users', (err, results) => {
+db.query('SHOW COLUMNS FROM penilaian', (err, results) => {
     if (err) {
-        fs.writeFileSync('db_columns.txt', 'Error: ' + err.message);
+        console.error('Error describing table:', err);
     } else {
         const fields = results.map(r => r.Field);
-        fs.writeFileSync('db_columns.txt', JSON.stringify(fields, null, 2));
+        console.log("FIELDS:", JSON.stringify(fields));
     }
     process.exit();
 });

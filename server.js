@@ -3,6 +3,7 @@ const mysql = require('mysql2');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
+const bcrypt = require('bcryptjs');
 
 const app = express();
 const PORT = 3000;
@@ -41,7 +42,7 @@ app.post('/api/login', (req, res) => {
     // Check in Users table (Joined with Roles)
     const query = "SELECT users.*, roles.role_name FROM users JOIN roles ON users.role_id = roles.role_id WHERE users.email = ?";
 
-    db.query(query, [email], (err, results) => {
+    db.query(query, [email], async (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
 
         if (results.length === 0) {
@@ -50,8 +51,28 @@ app.post('/api/login', (req, res) => {
 
         const user = results[0];
 
-        // Simple password check (In production, use bcrypt)
-        if (user.password !== password) {
+        // Password Comparison with bcrypt
+        const match = await bcrypt.compare(password, user.password);
+
+        if (!match) {
+            // Fallback for legacy plain text passwords (temporary during migration)
+            if (user.password === password) {
+                // If matches plain text, we should ideally upgrade it here, but let's just allow it for now
+                // or stricly enforce hash
+            } else {
+                return res.status(401).json({ error: 'Incorrect password' });
+            }
+        }
+
+        // Ideally we don't return plain text match, but for smooth transition let's just enforce match
+        // Actually, if await bcrypt.compare is false, it might be plain text.
+        // Let's do a robust check:
+        let isValid = match;
+        if (!isValid && user.password === password) {
+            isValid = true; // Allow legacy plain text for now
+        }
+
+        if (!isValid) {
             return res.status(401).json({ error: 'Incorrect password' });
         }
 
@@ -66,24 +87,30 @@ app.post('/api/login', (req, res) => {
 });
 
 // 2. Register Endpoint
-app.post('/api/register', (req, res) => {
+app.post('/api/register', async (req, res) => {
     const { name, email, password } = req.body;
 
     // Default role = 2 (Karyawan)
     const roleId = 2;
 
-    // Insert into users
-    const query = 'INSERT INTO users (username, email, password, role_id, status) VALUES (?, ?, ?, ?, ?)';
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-    db.query(query, [name, email, password, roleId, 'Active'], (err, result) => {
-        if (err) {
-            if (err.code === 'ER_DUP_ENTRY') {
-                return res.status(400).json({ error: 'Email already exists' });
+        // Insert into users
+        const query = 'INSERT INTO users (username, email, password, role_id, status) VALUES (?, ?, ?, ?, ?)';
+
+        db.query(query, [name, email, hashedPassword, roleId, 'Active'], (err, result) => {
+            if (err) {
+                if (err.code === 'ER_DUP_ENTRY') {
+                    return res.status(400).json({ error: 'Email already exists' });
+                }
+                return res.status(500).json({ error: err.message });
             }
-            return res.status(500).json({ error: err.message });
-        }
-        res.json({ message: 'Registration successful', userId: result.insertId });
-    });
+            res.json({ message: 'Registration successful', userId: result.insertId });
+        });
+    } catch (e) {
+        res.status(500).json({ error: 'Error hashing password' });
+    }
 });
 
 // 3. Dashboard Stats Endpoint
@@ -165,14 +192,20 @@ app.get('/api/employees', (req, res) => {
 });
 
 // 5b. CREATE Employee
-app.post('/api/employees', (req, res) => {
+app.post('/api/employees', async (req, res) => {
     const { name, email, password } = req.body;
     const roleId = 2; // Karyawan
-    const query = 'INSERT INTO users (username, email, password, role_id, status) VALUES (?, ?, ?, ?, ?)';
-    db.query(query, [name, email, password, roleId, 'Active'], (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: 'Employee added successfully', id: result.insertId });
-    });
+
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const query = 'INSERT INTO users (username, email, password, role_id, status) VALUES (?, ?, ?, ?, ?)';
+        db.query(query, [name, email, hashedPassword, roleId, 'Active'], (err, result) => {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ message: 'Employee added successfully', id: result.insertId });
+        });
+    } catch (e) {
+        res.status(500).json({ error: 'Error hashing password' });
+    }
 });
 
 // 6. Get All Criteria (Master Data)
@@ -238,6 +271,51 @@ app.get('/api/reports/rankings', (req, res) => {
     });
 });
 
+
+// 9. Get Employee Stats
+app.get('/api/employees/:id/stats', (req, res) => {
+    const empId = req.params.id;
+    const qStats = `
+        SELECT 
+            COUNT(*) as total_assessments, 
+            AVG(total_nilai) as avg_score 
+        FROM penilaian 
+        WHERE karyawan_id = ?
+    `;
+
+    db.query(qStats, [empId], (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+
+        const stats = results[0];
+        // Calculate trend (dummy logic for now, or compare with previous period if complex)
+        // For simplicity, let's just return the raw stats
+        res.json({
+            total_assessments: stats.total_assessments || 0,
+            avg_score: stats.avg_score ? parseFloat(stats.avg_score).toFixed(1) : 0
+        });
+    });
+});
+
+// 10. Get Employee Assessment History
+app.get('/api/employees/:id/assessments', (req, res) => {
+    const empId = req.params.id;
+    const query = `
+        SELECT 
+            p.*, 
+            per.nama_periode,
+            u.username as penilai_name
+        FROM penilaian p
+        JOIN periode per ON p.periode_id = per.periode_id
+        JOIN users u ON p.penilai_id = u.user_id
+        WHERE p.karyawan_id = ?
+        ORDER BY per.tanggal_selesai DESC
+    `;
+
+    db.query(query, [empId], (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(results);
+    });
+});
 
 // Start Server
 app.listen(PORT, () => {
