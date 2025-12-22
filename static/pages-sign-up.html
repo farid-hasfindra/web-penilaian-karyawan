@@ -67,28 +67,33 @@
 	<script src="js/app.js"></script>
 
     <script>
-        document.getElementById('registerForm').addEventListener('submit', function(e) {
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            // Simulate Database with LocalStorage
-            let users = JSON.parse(localStorage.getItem('users')) || [];
-            
-            // Check if user exists
-            if (users.find(u => u.email === email)) {
-                alert('Email sudah terdaftar!');
-                return;
+            try {
+                const response = await fetch('http://localhost:3000/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Registrasi Berhasil! Silakan Login.');
+                    window.location.href = 'pages-sign-in.html';
+                } else {
+                    alert(data.error || 'Registrasi Gagal');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan koneksi ke server.');
             }
-
-            // Add new user
-            users.push({ name, email, password });
-            localStorage.setItem('users', JSON.stringify(users));
-
-            alert('Registrasi Berhasil! Silakan Login.');
-            window.location.href = 'pages-sign-in.html';
         });
     </script>
 

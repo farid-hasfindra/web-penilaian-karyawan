@@ -69,36 +69,44 @@
 	<script src="js/app.js"></script>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            var email = document.getElementById('email').value;
-            var password = document.getElementById('password').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
 
-            // 1. Check Admin Credentials (Hardcoded)
-            if (email === 'admin@gmail.com') {
-                if (password === 'admin123') {
-                    // Admin Login Success
-                    localStorage.setItem('currentUser', JSON.stringify({ name: 'Admin', role: 'admin' }));
-                    window.location.href = 'index.html';
+            try {
+                const response = await fetch('http://localhost:3000/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Login Success
+                    // Store Session Data
+                    localStorage.setItem('currentUser', JSON.stringify({
+                        id: data.id,
+                        name: data.name,
+                        email: data.email,
+                        role: data.role
+                    }));
+
+                    // Role-based Redirect
+                    if (data.role === 'Admin') {
+                        window.location.href = 'index.html';
+                    } else {
+                        window.location.href = 'karyawan-dashboard.html';
+                    }
                 } else {
-                    // Admin Email but Wrong Password
-                    alert('Password salah untuk akun Admin!');
+                    // Login Failed
+                    alert(data.error || 'Login Failed');
                 }
-                return;
-            }
-
-            // 2. Check Employee Credentials (from LocalStorage "Database")
-            let users = JSON.parse(localStorage.getItem('users')) || [];
-            let user = users.find(u => u.email === email && u.password === password);
-
-            if (user) {
-                // Employee Login Success
-                localStorage.setItem('currentUser', JSON.stringify({ name: user.name, role: 'karyawan' }));
-                window.location.href = 'karyawan-dashboard.html';
-            } else {
-                // Not found in DB or wrong password
-                alert('Email atau Password salah! Pastikan Anda sudah mendaftar.');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan koneksi ke server.');
             }
         });
     </script>

@@ -51,10 +51,15 @@
 						</a>
 					</li>
 
-					<li class="sidebar-header">Penilaian</li>
+					<li class="sidebar-header">Penilaian & Laporan</li>
 					<li class="sidebar-item">
 						<a class="sidebar-link" href="pages-penilaian.html">
 							<i class="align-middle" data-feather="edit-3"></i> <span class="align-middle">Input Penilaian</span>
+						</a>
+					</li>
+                    <li class="sidebar-item">
+						<a class="sidebar-link" href="pages-laporan.html">
+							<i class="align-middle" data-feather="bar-chart-2"></i> <span class="align-middle">Laporan Kinerja</span>
 						</a>
 					</li>
 				</ul>
@@ -95,7 +100,7 @@
 							<div class="card">
 								<div class="card-header d-flex justify-content-between align-items-center">
 									<h5 class="card-title mb-0">List Karyawan</h5>
-                                    <button class="btn btn-primary btn-sm"><i class="align-middle" data-feather="plus"></i> Tambah Karyawan</button>
+                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addEmployeeModal"><i class="align-middle" data-feather="plus"></i> Tambah Karyawan</button>
 								</div>
 								<div class="card-body">
                                     <table class="table table-striped">
@@ -111,27 +116,8 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td>1</td>
-                                                <td>John Doe</td>
-                                                <td>Staff IT</td>
-                                                <td>2023-01-15</td>
-                                                <td><span class="badge bg-success">Aktif</span></td>
-                                                <td>
-                                                    <a href="#" class="text-info"><i class="align-middle" data-feather="edit"></i></a>
-                                                    <a href="#" class="text-danger ms-2"><i class="align-middle" data-feather="trash-2"></i></a>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>2</td>
-                                                <td>Jane Smith</td>
-                                                <td>HRD</td>
-                                                <td>2022-11-01</td>
-                                                <td><span class="badge bg-success">Aktif</span></td>
-                                                <td>
-                                                    <a href="#" class="text-info"><i class="align-middle" data-feather="edit"></i></a>
-                                                    <a href="#" class="text-danger ms-2"><i class="align-middle" data-feather="trash-2"></i></a>
-                                                </td>
-                                            </tr>
+                                        <tbody id="employeesTableBody">
+                                            <!-- Populated by JS -->
                                         </tbody>
                                     </table>
 								</div>
@@ -156,8 +142,99 @@
 		</div>
 	</div>
 
-	<script src="js/app.js"></script>
+    <!-- Modal Tambah Karyawan -->
+    <div class="modal fade" id="addEmployeeModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tambah Karyawan Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body m-3">
+                    <form id="addEmployeeForm">
+                        <div class="mb-3">
+                            <label class="form-label">Nama Lengkap</label>
+                            <input type="text" class="form-control" name="name" required placeholder="Nama Lengkap">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" required placeholder="Email">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password Default</label>
+                            <input type="text" class="form-control" name="password" value="123456" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
+	<script src="js/app.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Fetch Employees
+            fetch('http://localhost:3000/api/employees')
+                .then(response => response.json())
+                .then(data => {
+                    renderTable(data);
+                })
+                .catch(err => console.error('Error fetching employees:', err));
+            
+            // Handle Add Employee
+            document.getElementById('addEmployeeForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData.entries());
+
+                try {
+                    const response = await fetch('http://localhost:3000/api/employees', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    if(response.ok) {
+                        alert('Karyawan berhasil ditambahkan!');
+                        location.reload(); 
+                    } else {
+                        alert('Gagal menambahkan karyawan');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+
+            function renderTable(data) {
+                const tableBody = document.getElementById('employeesTableBody');
+                if (data.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="5" class="text-center">Tidak ada data karyawan</td></tr>';
+                    return;
+                }
+                
+                tableBody.innerHTML = '';
+                data.forEach(emp => {
+                    const row = `
+                        <tr>
+                            <td>${emp.username}</td>
+                            <td class="d-none d-xl-table-cell">${emp.email}</td>
+                            <td class="d-none d-xl-table-cell">${emp.role_name}</td>
+                            <td><span class="badge bg-success">Active</span></td>
+                            <td class="d-none d-md-table-cell">
+                                <button class="btn btn-sm btn-primary">Edit</button>
+                                <button class="btn btn-sm btn-danger">Hapus</button>
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>
