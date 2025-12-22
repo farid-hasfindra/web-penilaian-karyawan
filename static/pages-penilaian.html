@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="Sistem Penilaian Kinerja Karyawan">
+	<meta name="author" content="AdminKit">
+	<meta name="keywords" content="adminkit, bootstrap, bootstrap 5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
+
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link rel="shortcut icon" href="img/icons/icon-48x48.png" />
+
+	<title>Input Penilaian | Sistem Penilaian</title>
+
+	<link href="css/app.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+	<div class="wrapper">
+		<nav id="sidebar" class="sidebar js-sidebar">
+			<div class="sidebar-content js-simplebar">
+				<a class="sidebar-brand" href="index.html">
+					<span class="align-middle">Sistem Penilaian</span>
+				</a>
+
+				<ul class="sidebar-nav">
+					<li class="sidebar-header">Main</li>
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="index.html">
+							<i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Dashboard</span>
+						</a>
+					</li>
+
+					<li class="sidebar-header">Master Data</li>
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="pages-karyawan.html">
+							<i class="align-middle" data-feather="users"></i> <span class="align-middle">Data Karyawan</span>
+						</a>
+					</li>
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="pages-kriteria.html">
+							<i class="align-middle" data-feather="list"></i> <span class="align-middle">Kriteria Penilaian</span>
+						</a>
+					</li>
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="pages-periode.html">
+							<i class="align-middle" data-feather="calendar"></i> <span class="align-middle">Periode Penilaian</span>
+						</a>
+					</li>
+
+					<li class="sidebar-header">Penilaian</li>
+					<li class="sidebar-item active">
+						<a class="sidebar-link" href="pages-penilaian.html">
+							<i class="align-middle" data-feather="edit-3"></i> <span class="align-middle">Input Penilaian</span>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+
+		<div class="main">
+			<nav class="navbar navbar-expand navbar-light navbar-bg">
+				<a class="sidebar-toggle js-sidebar-toggle">
+					<i class="hamburger align-self-center"></i>
+				</a>
+
+				<div class="navbar-collapse collapse">
+					<ul class="navbar-nav navbar-align">
+						<li class="nav-item dropdown">
+							<a class="nav-icon dropdown-toggle d-inline-block d-sm-none" href="#" data-bs-toggle="dropdown">
+								<i class="align-middle" data-feather="settings"></i>
+							</a>
+
+							<a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-bs-toggle="dropdown">
+								<img src="img/avatars/avatar.jpg" class="avatar img-fluid rounded me-1" alt="Admin" /> <span class="text-dark">Admin</span>
+							</a>
+							<div class="dropdown-menu dropdown-menu-end">
+								<a class="dropdown-item" href="#">Log out</a>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</nav>
+
+			<main class="content">
+				<div class="container-fluid p-0">
+
+					<h1 class="h3 mb-3">Input Penilaian Kinerja</h1>
+
+					<div class="row">
+						<div class="col-12 col-xl-8">
+							<div class="card">
+								<div class="card-header">
+									<h5 class="card-title mb-0">Form Penilaian</h5>
+								</div>
+								<div class="card-body">
+                                    <form>
+                                        <div class="mb-3">
+                                            <label class="form-label">Periode Penilaian</label>
+                                            <select class="form-select mb-3">
+                                                <option selected>Pilih Periode...</option>
+                                                <option value="1">Q1 2025</option>
+                                                <option value="2">Q4 2024</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Nama Karyawan</label>
+                                            <select class="form-select mb-3">
+                                                <option selected>Pilih Karyawan...</option>
+                                                <option value="1">John Doe - Staff IT</option>
+                                                <option value="2">Jane Smith - HRD</option>
+                                            </select>
+                                        </div>
+
+                                        <hr class="my-4">
+                                        <h5 class="mb-3">Kriteria Penilaian</h5>
+
+                                        <div class="mb-3 row">
+                                            <label class="col-sm-4 col-form-label">Disiplin (30%)</label>
+                                            <div class="col-sm-8">
+                                                <input type="number" class="form-control" placeholder="Nilai (0-100)" min="0" max="100">
+                                            </div>
+                                        </div>
+                                        <div class="mb-3 row">
+                                            <label class="col-sm-4 col-form-label">Kerjasama Tim (20%)</label>
+                                            <div class="col-sm-8">
+                                                <input type="number" class="form-control" placeholder="Nilai (0-100)" min="0" max="100">
+                                            </div>
+                                        </div>
+                                        <div class="mb-3 row">
+                                            <label class="col-sm-4 col-form-label">Kualitas Kerja (50%)</label>
+                                            <div class="col-sm-8">
+                                                <input type="number" class="form-control" placeholder="Nilai (0-100)" min="0" max="100">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mt-4">
+                                            <button type="submit" class="btn btn-primary">Simpan Penilaian</button>
+                                        </div>
+                                    </form>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</main>
+
+			<footer class="footer">
+				<div class="container-fluid">
+					<div class="row text-muted">
+						<div class="col-6 text-start">
+							<p class="mb-0">
+								<strong>Sistem Penilaian Kinerja</strong> &copy; 2025
+							</p>
+						</div>
+					</div>
+				</div>
+			</footer>
+		</div>
+	</div>
+
+	<script src="js/app.js"></script>
+
+</body>
+
+</html>

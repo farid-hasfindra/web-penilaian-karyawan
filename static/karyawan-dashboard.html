@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="Sistem Penilaian Kinerja Karyawan">
+	<meta name="author" content="AdminKit">
+	<meta name="keywords" content="adminkit, bootstrap, bootstrap 5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
+
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link rel="shortcut icon" href="img/icons/icon-48x48.png" />
+
+	<title>Dashboard Karyawan | Sistem Penilaian</title>
+
+	<link href="css/app.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+	<div class="wrapper">
+		<nav id="sidebar" class="sidebar js-sidebar">
+			<div class="sidebar-content js-simplebar">
+				<a class="sidebar-brand" href="karyawan-dashboard.html">
+					<span class="align-middle">Sistem Penilaian</span>
+				</a>
+
+				<ul class="sidebar-nav">
+					<li class="sidebar-header">Main</li>
+					<li class="sidebar-item active">
+						<a class="sidebar-link" href="karyawan-dashboard.html">
+							<i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Dashboard</span>
+						</a>
+					</li>
+
+					<li class="sidebar-header">Penilaian Saya</li>
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="karyawan-report.html">
+							<i class="align-middle" data-feather="file-text"></i> <span class="align-middle">Riwayat Penilaian</span>
+						</a>
+					</li>
+                    <li class="sidebar-item">
+						<a class="sidebar-link" href="pages-profile.html">
+							<i class="align-middle" data-feather="user"></i> <span class="align-middle">Profile</span>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+
+		<div class="main">
+			<nav class="navbar navbar-expand navbar-light navbar-bg">
+				<a class="sidebar-toggle js-sidebar-toggle">
+					<i class="hamburger align-self-center"></i>
+				</a>
+
+				<div class="navbar-collapse collapse">
+					<ul class="navbar-nav navbar-align">
+						<li class="nav-item dropdown">
+							<a class="nav-icon dropdown-toggle d-inline-block d-sm-none" href="#" data-bs-toggle="dropdown">
+								<i class="align-middle" data-feather="settings"></i>
+							</a>
+
+							<a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-bs-toggle="dropdown">
+								<img src="img/avatars/avatar-5.jpg" class="avatar img-fluid rounded me-1" alt="Karyawan" /> <span class="text-dark">John Doe (Karyawan)</span>
+							</a>
+							<div class="dropdown-menu dropdown-menu-end">
+								<a class="dropdown-item" href="pages-profile.html"><i class="align-middle me-1" data-feather="user"></i> Profile</a>
+								<div class="dropdown-divider"></div>
+								<a class="dropdown-item" href="#">Log out</a>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</nav>
+
+			<main class="content">
+				<div class="container-fluid p-0">
+
+					<h1 class="h3 mb-3"><strong>Karyawan</strong> Dashboard</h1>
+
+					<div class="row">
+						<div class="col-xl-6 d-flex">
+							<div class="w-100">
+								<div class="row">
+									<div class="col-sm-6">
+										<div class="card">
+											<div class="card-body">
+												<div class="row">
+													<div class="col mt-0">
+														<h5 class="card-title">Nilai Rata-rata</h5>
+													</div>
+													<div class="col-auto">
+														<div class="stat text-primary">
+															<i class="align-middle" data-feather="bar-chart-2"></i>
+														</div>
+													</div>
+												</div>
+												<h1 class="mt-1 mb-3">85.4</h1>
+												<div class="mb-0">
+													<span class="text-success"> <i class="mdi mdi-arrow-bottom-right"></i> +2.5% </span>
+													<span class="text-muted">Dari periode lalu</span>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="col-sm-6">
+										<div class="card">
+											<div class="card-body">
+												<div class="row">
+													<div class="col mt-0">
+														<h5 class="card-title">Total Penilaian</h5>
+													</div>
+
+													<div class="col-auto">
+														<div class="stat text-primary">
+															<i class="align-middle" data-feather="file-text"></i>
+														</div>
+													</div>
+												</div>
+												<h1 class="mt-1 mb-3">4</h1>
+												<div class="mb-0">
+													<span class="text-muted">Periode dinilai</span>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-xl-6">
+							<div class="card flex-fill w-100">
+								<div class="card-header">
+									<h5 class="card-title mb-0">Tren Kinerja</h5>
+								</div>
+								<div class="card-body py-3">
+									<div class="chart chart-sm">
+										<canvas id="chartjs-dashboard-line"></canvas>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-12 d-flex">
+							<div class="card flex-fill">
+								<div class="card-header">
+									<h5 class="card-title mb-0">Penilaian Terakhir</h5>
+								</div>
+								<table class="table table-hover my-0">
+									<thead>
+										<tr>
+											<th>Periode</th>
+											<th class="d-none d-xl-table-cell">Tanggal Penilaian</th>
+											<th>Total Nilai</th>
+											<th>Status</th>
+											<th class="d-none d-md-table-cell">Penilai</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>Q4 2024</td>
+											<td class="d-none d-xl-table-cell">05/01/2025</td>
+											<td><span class="badge bg-success">88.5</span></td>
+											<td><span class="badge bg-success">Selesai</span></td>
+											<td class="d-none d-md-table-cell">Admin HR</td>
+										</tr>
+                                        <tr>
+											<td>Q3 2024</td>
+											<td class="d-none d-xl-table-cell">05/10/2024</td>
+											<td><span class="badge bg-warning">82.0</span></td>
+											<td><span class="badge bg-success">Selesai</span></td>
+											<td class="d-none d-md-table-cell">Admin HR</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</main>
+
+			<footer class="footer">
+				<div class="container-fluid">
+					<div class="row text-muted">
+						<div class="col-6 text-start">
+							<p class="mb-0">
+								<strong>Sistem Penilaian Kinerja</strong> &copy; 2025
+							</p>
+						</div>
+					</div>
+				</div>
+			</footer>
+		</div>
+	</div>
+
+	<script src="js/app.js"></script>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			var ctx = document.getElementById("chartjs-dashboard-line").getContext("2d");
+			var gradient = ctx.createLinearGradient(0, 0, 0, 225);
+			gradient.addColorStop(0, "rgba(215, 227, 244, 1)");
+			gradient.addColorStop(1, "rgba(215, 227, 244, 0)");
+			// Line chart
+			new Chart(document.getElementById("chartjs-dashboard-line"), {
+				type: "line",
+				data: {
+					labels: ["Q1", "Q2", "Q3", "Q4"],
+					datasets: [{
+						label: "Nilai Kinerja",
+						fill: true,
+						backgroundColor: gradient,
+						borderColor: window.theme.primary,
+						data: [
+							75,
+							80,
+							82,
+							88
+						]
+					}]
+				},
+				options: {
+					maintainAspectRatio: false,
+					legend: {
+						display: false
+					},
+					tooltips: {
+						intersect: false
+					},
+					hover: {
+						intersect: true
+					},
+					plugins: {
+						filler: {
+							propagate: false
+						}
+					},
+					scales: {
+						xAxes: [{
+							reverse: true,
+							gridLines: {
+								color: "rgba(0,0,0,0.0)"
+							}
+						}],
+						yAxes: [{
+							ticks: {
+								stepSize: 10
+							},
+							display: true,
+							borderDash: [3, 3],
+							gridLines: {
+								color: "rgba(0,0,0,0.0)"
+							}
+						}]
+					}
+				}
+			});
+		});
+	</script>
+
+</body>
+
+</html>
