@@ -114,10 +114,6 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>Disiplin</td>
-                                                <td>30%</td>
                                         <tbody id="criteriaTableBody">
                                             <!-- Populated by JS -->
                                         </tbody>
@@ -148,9 +144,46 @@
                             <label class="form-label">Bobot (%)</label>
                             <input type="number" class="form-control" name="weight" required placeholder="Contoh: 20">
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Deskripsi</label>
+                            <textarea class="form-control" name="description" rows="3" placeholder="Penjelasan singkat..."></textarea>
+                        </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                             <button type="submit" class="btn btn-primary">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit Kriteria -->
+    <div class="modal fade" id="editCriteriaModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Kriteria</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body m-3">
+                    <form id="editCriteriaForm">
+                        <input type="hidden" name="id" id="editCriteriaId">
+                        <div class="mb-3">
+                            <label class="form-label">Nama Kriteria</label>
+                            <input type="text" class="form-control" name="name" id="editCriteriaName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Bobot (%)</label>
+                            <input type="number" class="form-control" name="weight" id="editCriteriaWeight" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Deskripsi</label>
+                            <textarea class="form-control" name="description" id="editCriteriaDescription" rows="3"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                         </div>
                     </form>
                 </div>
@@ -218,17 +251,71 @@
                 data.forEach(item => {
                     const row = `
                         <tr>
+                            <td>${item.kriteria_id}</td>
                             <td>${item.nama_kriteria}</td>
                             <td>${item.bobot}%</td>
+                            <td>${item.deskripsi || '-'}</td>
                             <td>
-                                <button class="btn btn-sm btn-primary">Edit</button>
-                                <button class="btn btn-sm btn-danger">Hapus</button>
+                                <button class="btn btn-sm btn-primary" onclick="window.editCriteria(${item.kriteria_id}, '${item.nama_kriteria}', ${item.bobot}, '${item.deskripsi || ''}')">Edit</button>
+                                <button class="btn btn-sm btn-danger" onclick="window.deleteCriteria(${item.kriteria_id})">Hapus</button>
                             </td>
                         </tr>
                     `;
                     tableBody.innerHTML += row;
                 });
             }
+
+            // Expose functions
+            window.deleteCriteria = async function(id) {
+                if(confirm('Yakin ingin menghapus kriteria ini?')) {
+                    try {
+                        const res = await fetch(`http://localhost:3000/api/criteria/${id}`, { method: 'DELETE' });
+                        if(res.ok) {
+                            alert('Kriteria berhasil dihapus');
+                            location.reload();
+                        } else {
+                            alert('Gagal menghapus');
+                        }
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }
+            }
+
+            window.editCriteria = function(id, name, weight, description) {
+                document.getElementById('editCriteriaId').value = id;
+                document.getElementById('editCriteriaName').value = name;
+                document.getElementById('editCriteriaWeight').value = weight;
+                document.getElementById('editCriteriaDescription').value = description;
+                
+                var myModal = new bootstrap.Modal(document.getElementById('editCriteriaModal'));
+                myModal.show();
+            }
+
+            // Handle Edit Submit
+            document.getElementById('editCriteriaForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData.entries());
+                const id = data.id;
+
+                try {
+                    const response = await fetch(`http://localhost:3000/api/criteria/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    if(response.ok) {
+                        alert('Kriteria berhasil diperbarui!');
+                        location.reload(); 
+                    } else {
+                        alert('Gagal memperbarui');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
         });
     </script>
 </body>

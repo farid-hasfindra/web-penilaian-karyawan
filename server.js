@@ -208,6 +208,43 @@ app.post('/api/employees', async (req, res) => {
     }
 });
 
+// 5c. DELETE Employee
+app.delete('/api/employees/:id', (req, res) => {
+    const userId = req.params.id;
+    const query = 'DELETE FROM users WHERE user_id = ?';
+    db.query(query, [userId], (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: 'User deleted successfully' });
+    });
+});
+
+// 5d. UPDATE Employee
+app.put('/api/employees/:id', async (req, res) => {
+    const userId = req.params.id;
+    const { name, email, password } = req.body;
+
+    let query = 'UPDATE users SET username = ?, email = ?';
+    let params = [name, email];
+
+    if (password && password.trim() !== "") {
+        try {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            query += ', password = ?';
+            params.push(hashedPassword);
+        } catch (e) {
+            return res.status(500).json({ error: 'Error hashing password' });
+        }
+    }
+
+    query += ' WHERE user_id = ?';
+    params.push(userId);
+
+    db.query(query, params, (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: 'User updated successfully' });
+    });
+});
+
 // 6. Get All Criteria (Master Data)
 app.get('/api/criteria', (req, res) => {
     const query = "SELECT * FROM kriteria";
@@ -224,6 +261,28 @@ app.post('/api/criteria', (req, res) => {
     db.query(query, [name, weight], (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ message: 'Criteria added successfully', id: result.insertId });
+    });
+});
+
+
+// 6c. DELETE Criteria
+app.delete('/api/criteria/:id', (req, res) => {
+    const id = req.params.id;
+    const query = 'DELETE FROM kriteria WHERE kriteria_id = ?';
+    db.query(query, [id], (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: 'Criteria deleted successfully' });
+    });
+});
+
+// 6d. UPDATE Criteria
+app.put('/api/criteria/:id', (req, res) => {
+    const id = req.params.id;
+    const { name, weight } = req.body;
+    const query = 'UPDATE kriteria SET nama_kriteria = ?, bobot = ? WHERE kriteria_id = ?';
+    db.query(query, [name, weight, id], (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: 'Criteria updated successfully' });
     });
 });
 
