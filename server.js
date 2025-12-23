@@ -180,7 +180,7 @@ app.get('/api/assessments/latest', (req, res) => {
 app.get('/api/employees', (req, res) => {
     // Get all users with role 'Karyawan'
     const query = `
-        SELECT u.user_id, u.username, u.email, r.role_name 
+        SELECT u.user_id, u.username, u.email, u.status, u.created_at, u.tanggal_lahir, u.alamat, r.role_name 
         FROM users u 
         JOIN roles r ON u.role_id = r.role_id 
         WHERE r.role_name = 'Karyawan'
@@ -193,13 +193,13 @@ app.get('/api/employees', (req, res) => {
 
 // 5b. CREATE Employee
 app.post('/api/employees', async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, tanggal_lahir, alamat } = req.body;
     const roleId = 2; // Karyawan
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const query = 'INSERT INTO users (username, email, password, role_id, status) VALUES (?, ?, ?, ?, ?)';
-        db.query(query, [name, email, hashedPassword, roleId, 'Active'], (err, result) => {
+        const query = 'INSERT INTO users (username, email, password, role_id, status, tanggal_lahir, alamat) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        db.query(query, [name, email, hashedPassword, roleId, 'Active', tanggal_lahir || null, alamat || null], (err, result) => {
             if (err) return res.status(500).json({ error: err.message });
             res.json({ message: 'Employee added successfully', id: result.insertId });
         });
@@ -221,10 +221,10 @@ app.delete('/api/employees/:id', (req, res) => {
 // 5d. UPDATE Employee
 app.put('/api/employees/:id', async (req, res) => {
     const userId = req.params.id;
-    const { name, email, password } = req.body;
+    const { name, email, password, tanggal_lahir, alamat } = req.body;
 
-    let query = 'UPDATE users SET username = ?, email = ?';
-    let params = [name, email];
+    let query = 'UPDATE users SET username = ?, email = ?, tanggal_lahir = ?, alamat = ?';
+    let params = [name, email, tanggal_lahir || null, alamat || null];
 
     if (password && password.trim() !== "") {
         try {
@@ -256,9 +256,9 @@ app.get('/api/criteria', (req, res) => {
 
 // 6b. CREATE Criteria
 app.post('/api/criteria', (req, res) => {
-    const { name, weight } = req.body;
-    const query = 'INSERT INTO kriteria (nama_kriteria, bobot) VALUES (?, ?)';
-    db.query(query, [name, weight], (err, result) => {
+    const { name, weight, description } = req.body;
+    const query = 'INSERT INTO kriteria (nama_kriteria, bobot, deskripsi) VALUES (?, ?, ?)';
+    db.query(query, [name, weight, description], (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ message: 'Criteria added successfully', id: result.insertId });
     });
@@ -278,9 +278,9 @@ app.delete('/api/criteria/:id', (req, res) => {
 // 6d. UPDATE Criteria
 app.put('/api/criteria/:id', (req, res) => {
     const id = req.params.id;
-    const { name, weight } = req.body;
-    const query = 'UPDATE kriteria SET nama_kriteria = ?, bobot = ? WHERE kriteria_id = ?';
-    db.query(query, [name, weight, id], (err, result) => {
+    const { name, weight, description } = req.body;
+    const query = 'UPDATE kriteria SET nama_kriteria = ?, bobot = ?, deskripsi = ? WHERE kriteria_id = ?';
+    db.query(query, [name, weight, description, id], (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ message: 'Criteria updated successfully' });
     });

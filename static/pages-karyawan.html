@@ -6,8 +6,8 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<meta name="description" content="Sistem Penilaian Kinerja Karyawan">
-	<meta name="author" content="AdminKit">
-	<meta name="keywords" content="adminkit, bootstrap, bootstrap 5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
+	<meta name="author" content="Admin">
+	<meta name="keywords" content="kinerja, karyawan, penilaian, dashboard">
 
 	<link rel="preconnect" href="https://fonts.gstatic.com">
 	<link rel="shortcut icon" href="img/icons/icon-48x48.png" />
@@ -27,14 +27,18 @@
 				</a>
 
 				<ul class="sidebar-nav">
-					<li class="sidebar-header">Main</li>
+					<li class="sidebar-header">
+						Main
+					</li>
 					<li class="sidebar-item">
 						<a class="sidebar-link" href="index.html">
 							<i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Dashboard</span>
 						</a>
 					</li>
 
-					<li class="sidebar-header">Master Data</li>
+					<li class="sidebar-header">
+						Master Data
+					</li>
 					<li class="sidebar-item active">
 						<a class="sidebar-link" href="pages-karyawan.html">
 							<i class="align-middle" data-feather="users"></i> <span class="align-middle">Data Karyawan</span>
@@ -51,13 +55,15 @@
 						</a>
 					</li>
 
-					<li class="sidebar-header">Penilaian & Laporan</li>
+					<li class="sidebar-header">
+						Penilaian & Laporan
+					</li>
 					<li class="sidebar-item">
 						<a class="sidebar-link" href="pages-penilaian.html">
 							<i class="align-middle" data-feather="edit-3"></i> <span class="align-middle">Input Penilaian</span>
 						</a>
 					</li>
-                    <li class="sidebar-item">
+					<li class="sidebar-item">
 						<a class="sidebar-link" href="pages-laporan.html">
 							<i class="align-middle" data-feather="bar-chart-2"></i> <span class="align-middle">Laporan Kinerja</span>
 						</a>
@@ -83,7 +89,9 @@
 								<img src="img/avatars/avatar.jpg" class="avatar img-fluid rounded me-1" alt="Admin" /> <span class="text-dark">Admin</span>
 							</a>
 							<div class="dropdown-menu dropdown-menu-end">
-								<a class="dropdown-item" href="pages-sign-in.html">Log out</a>
+								<a class="dropdown-item" href="pages-profile.html"><i class="align-middle me-1" data-feather="user"></i> Profile</a>
+								<div class="dropdown-divider"></div>
+								<a class="dropdown-item" href="index.html">Log out</a>
 							</div>
 						</li>
 					</ul>
@@ -103,23 +111,22 @@
                                     <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addEmployeeModal"><i class="align-middle" data-feather="plus"></i> Tambah Karyawan</button>
 								</div>
 								<div class="card-body">
-                                    <table class="table table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Nama</th>
-                                                <th>Jabatan</th>
-                                                <th>Tanggal Masuk</th>
-                                                <th>Status Aktif</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                        <tbody id="employeesTableBody">
-                                            <!-- Populated by JS -->
-                                        </tbody>
-                                    </table>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover my-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Nama</th>
+                                                    <th>Jabatan</th>
+                                                    <th>Status Aktif</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="employeesTableBody">
+                                                <!-- Dynamic Data -->
+                                            </tbody>
+                                        </table>
+                                    </div>
 								</div>
 							</div>
 						</div>
@@ -164,6 +171,14 @@
                             <label class="form-label">Password Default</label>
                             <input type="text" class="form-control" name="password" value="123456" required>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tanggal Lahir</label>
+                            <input type="date" class="form-control" name="tanggal_lahir">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Alamat</label>
+                            <textarea class="form-control" name="alamat" placeholder="Alamat lengkap"></textarea>
+                        </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                             <button type="submit" class="btn btn-primary">Simpan</button>
@@ -195,7 +210,15 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Password Baru (Opsional)</label>
-                            <input type="text" class="form-control" name="password" placeholder="Kosongkan jika tidak ingin mengubah password">
+                            <input type="text" class="form-control" name="password" id="editEmployeePassword" placeholder="Kosongkan jika tidak ingin mengubah password">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tanggal Lahir</label>
+                            <input type="date" class="form-control" id="editEmployeeBirthDate">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Alamat</label>
+                            <textarea class="form-control" id="editEmployeeAddress"></textarea>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -207,17 +230,33 @@
         </div>
     </div>
 
+    <!-- Modal Detail Karyawan -->
+    <div class="modal fade" id="viewEmployeeModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detail Karyawan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body m-3">
+                    <div class="mb-2"><strong>ID:</strong> <span id="viewEmployeeId"></span></div>
+                    <div class="mb-2"><strong>Nama:</strong> <span id="viewEmployeeName"></span></div>
+                    <div class="mb-2"><strong>Email:</strong> <span id="viewEmployeeEmail"></span></div>
+                    <div class="mb-2"><strong>Jabatan:</strong> <span id="viewEmployeeRole"></span></div>
+                    <div class="mb-2"><strong>Tanggal Masuk:</strong> <span id="viewEmployeeJoinDate"></span></div>
+                    <div class="mb-2"><strong>Tanggal Lahir:</strong> <span id="viewEmployeeBirthDate"></span></div>
+                    <div class="mb-2"><strong>Alamat:</strong> <span id="viewEmployeeAddress"></span></div>
+                    <div class="mb-2"><strong>Status:</strong> <span id="viewEmployeeStatus"></span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 	<script src="js/app.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Fetch Employees
-            fetch('http://localhost:3000/api/employees')
-                .then(response => response.json())
-                .then(data => {
-                    renderTable(data);
-                })
-                .catch(err => console.error('Error fetching employees:', err));
-            
+            fetchEmployees();
+
             // Handle Add Employee
             document.getElementById('addEmployeeForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
@@ -225,7 +264,7 @@
                 const data = Object.fromEntries(formData.entries());
 
                 try {
-                    const response = await fetch('http://localhost:3000/api/employees', {
+                    const response = await fetch('/api/employees', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(data)
@@ -235,93 +274,134 @@
                         alert('Karyawan berhasil ditambahkan!');
                         location.reload(); 
                     } else {
-                        alert('Gagal menambahkan karyawan');
+                        const res = await response.json();
+                        alert('Gagal: ' + (res.error || 'Server Error'));
                     }
                 } catch (error) {
                     console.error('Error:', error);
                 }
             });
 
-            function renderTable(data) {
-                const tableBody = document.getElementById('employeesTableBody');
-                if (data.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="5" class="text-center">Tidak ada data karyawan</td></tr>';
-                    return;
-                }
-                
-                tableBody.innerHTML = '';
-                data.forEach(emp => {
-                    const row = `
-                        <tr>
-                            <td>${emp.username}</td>
-                            <td class="d-none d-xl-table-cell">${emp.email}</td>
-                            <td class="d-none d-xl-table-cell">${emp.role_name}</td>
-                            <td><span class="badge bg-success">Active</span></td>
-                            <td class="d-none d-md-table-cell">
-                                <button class="btn btn-sm btn-primary" onclick="window.editEmployee(${emp.user_id}, '${emp.username}', '${emp.email}')">Edit</button>
-                                <button class="btn btn-sm btn-danger" onclick="window.deleteEmployee(${emp.user_id})">Hapus</button>
-                            </td>
-                        </tr>
-                    `;
-                    tableBody.innerHTML += row;
-                });
-            }
-
-            // Expose functions to global scope
-            window.deleteEmployee = async function(id) {
-                if(confirm('Apakah Anda yakin ingin menghapus karyawan ini? Data yang dihapus tidak dapat dikembalikan.')) {
-                    try {
-                        const res = await fetch(`http://localhost:3000/api/employees/${id}`, { method: 'DELETE' });
-                        if(res.ok) {
-                            alert('Karyawan berhasil dihapus');
-                            location.reload();
-                        } else {
-                            alert('Gagal menghapus karyawan');
-                        }
-                    } catch (e) {
-                        console.error(e);
-                        alert('Terjadi kesalahan');
-                    }
-                }
-            }
-
-            window.editEmployee = function(id, name, email) {
-                // Populate Modal
-                document.getElementById('editEmployeeId').value = id;
-                document.getElementById('editEmployeeName').value = name;
-                document.getElementById('editEmployeeEmail').value = email;
-                
-                // Show Modal
-                var myModal = new bootstrap.Modal(document.getElementById('editEmployeeModal'));
-                myModal.show();
-            }
-
-            // Handle Edit Submit
-            document.getElementById('editEmployeeForm').addEventListener('submit', async function(e) {
+            // Handle Edit Employee
+            document.getElementById('editEmployeeForm').addEventListener('submit', function(e) {
                 e.preventDefault();
-                const formData = new FormData(e.target);
-                const data = Object.fromEntries(formData.entries());
-                const id = data.id;
+                const id = document.getElementById('editEmployeeId').value;
+                const name = document.getElementById('editEmployeeName').value;
+                const email = document.getElementById('editEmployeeEmail').value;
+                const password = document.getElementById('editEmployeePassword').value;
+                const tanggal_lahir = document.getElementById('editEmployeeBirthDate').value;
+                const alamat = document.getElementById('editEmployeeAddress').value;
 
-                try {
-                    const response = await fetch(`http://localhost:3000/api/employees/${id}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
-                    });
-                    
-                    if(response.ok) {
-                        alert('Data karyawan berhasil diperbarui!');
-                        location.reload(); 
+                fetch(`/api/employees/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password, tanggal_lahir, alamat })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if(result.error) {
+                        alert('Error: ' + result.error);
                     } else {
-                        alert('Gagal memperbarui data');
+                        alert('Karyawan berhasil diupdate');
+                        location.reload();
                     }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('Terjadi kesalahan koneksi');
-                }
+                })
+                .catch(error => console.error('Error:', error));
             });
         });
+
+        function fetchEmployees() {
+            fetch('/api/employees')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('employeesTableBody');
+                    window.employeesData = data; // Store data for view modal
+                    
+                    if (data.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="5" class="text-center">Tidak ada data karyawan</td></tr>';
+                        return;
+                    }
+                    
+                    tableBody.innerHTML = '';
+                    data.forEach(emp => {
+                        const statusBadge = emp.status === 'Active' ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>';
+                        
+                        // Safe params for JS calls
+                        const safeName = emp.username.replace(/'/g, "\\'");
+                        const safeEmail = emp.email.replace(/'/g, "\\'");
+                        const safeAddress = emp.alamat ? emp.alamat.replace(/'/g, "\\'") : '';
+                        const safeBirthDate = emp.tanggal_lahir ? emp.tanggal_lahir.split('T')[0] : '';
+
+                        const row = `
+                            <tr>
+                                <td>${emp.user_id}</td>
+                                <td>${emp.username}</td>
+                                <td>${emp.role_name}</td>
+                                <td>${statusBadge}</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            ...
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#" onclick="window.viewEmployee(${emp.user_id})">Lihat Informasi Detail</a></li>
+                                            <li><a class="dropdown-item" href="#" onclick="window.editEmployee(${emp.user_id}, '${safeName}', '${safeEmail}', '${safeBirthDate}', '${safeAddress}')">Edit</a></li>
+                                            <li><a class="dropdown-item text-danger" href="#" onclick="window.deleteEmployee(${emp.user_id})">Hapus</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                        tableBody.innerHTML += row;
+                    });
+                })
+                .catch(err => console.error('Error fetching employees:', err));
+        }
+
+        window.viewEmployee = function(id) {
+            const emp = window.employeesData.find(e => e.user_id === id);
+            if (emp) {
+                document.getElementById('viewEmployeeId').innerText = emp.user_id;
+                document.getElementById('viewEmployeeName').innerText = emp.username;
+                document.getElementById('viewEmployeeEmail').innerText = emp.email;
+                document.getElementById('viewEmployeeRole').innerText = emp.role_name;
+                document.getElementById('viewEmployeeJoinDate').innerText = emp.created_at ? new Date(emp.created_at).toLocaleDateString('id-ID') : '-';
+                document.getElementById('viewEmployeeBirthDate').innerText = emp.tanggal_lahir ? new Date(emp.tanggal_lahir).toLocaleDateString('id-ID') : '-';
+                document.getElementById('viewEmployeeAddress').innerText = emp.alamat || '-';
+                document.getElementById('viewEmployeeStatus').innerText = emp.status;
+                
+                new bootstrap.Modal(document.getElementById('viewEmployeeModal')).show();
+            }
+        }
+
+        window.editEmployee = function(id, name, email, birthDate, address) {
+            document.getElementById('editEmployeeId').value = id;
+            document.getElementById('editEmployeeName').value = name;
+            document.getElementById('editEmployeeEmail').value = email;
+            document.getElementById('editEmployeeBirthDate').value = birthDate;
+            document.getElementById('editEmployeeAddress').value = address;
+            document.getElementById('editEmployeePassword').value = ''; 
+            
+            new bootstrap.Modal(document.getElementById('editEmployeeModal')).show();
+        }
+
+        window.deleteEmployee = async function(id) {
+            if(confirm('Apakah Anda yakin ingin menghapus karyawan ini? Data yang dihapus tidak dapat dikembalikan.')) {
+                try {
+                    const res = await fetch(`/api/employees/${id}`, { method: 'DELETE' });
+                    const result = await res.json();
+                    if(res.ok) {
+                        alert(result.message);
+                        location.reload();
+                    } else {
+                        alert('Gagal: ' + result.error);
+                    }
+                } catch (e) {
+                    console.error(e);
+                    alert('Terjadi kesalahan saat menghubungi server');
+                }
+            }
+        }
     </script>
 </body>
 

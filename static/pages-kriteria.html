@@ -6,8 +6,8 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<meta name="description" content="Sistem Penilaian Kinerja Karyawan">
-	<meta name="author" content="AdminKit">
-	<meta name="keywords" content="adminkit, bootstrap, bootstrap 5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
+	<meta name="author" content="Admin">
+	<meta name="keywords" content="kinerja, karyawan, penilaian, dashboard">
 
 	<link rel="preconnect" href="https://fonts.gstatic.com">
 	<link rel="shortcut icon" href="img/icons/icon-48x48.png" />
@@ -27,14 +27,18 @@
 				</a>
 
 				<ul class="sidebar-nav">
-					<li class="sidebar-header">Main</li>
+					<li class="sidebar-header">
+						Main
+					</li>
 					<li class="sidebar-item">
 						<a class="sidebar-link" href="index.html">
 							<i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Dashboard</span>
 						</a>
 					</li>
 
-					<li class="sidebar-header">Master Data</li>
+					<li class="sidebar-header">
+						Master Data
+					</li>
 					<li class="sidebar-item">
 						<a class="sidebar-link" href="pages-karyawan.html">
 							<i class="align-middle" data-feather="users"></i> <span class="align-middle">Data Karyawan</span>
@@ -51,13 +55,15 @@
 						</a>
 					</li>
 
-					<li class="sidebar-header">Penilaian & Laporan</li>
+					<li class="sidebar-header">
+						Penilaian & Laporan
+					</li>
 					<li class="sidebar-item">
 						<a class="sidebar-link" href="pages-penilaian.html">
 							<i class="align-middle" data-feather="edit-3"></i> <span class="align-middle">Input Penilaian</span>
 						</a>
 					</li>
-                    <li class="sidebar-item">
+					<li class="sidebar-item">
 						<a class="sidebar-link" href="pages-laporan.html">
 							<i class="align-middle" data-feather="bar-chart-2"></i> <span class="align-middle">Laporan Kinerja</span>
 						</a>
@@ -83,7 +89,9 @@
 								<img src="img/avatars/avatar.jpg" class="avatar img-fluid rounded me-1" alt="Admin" /> <span class="text-dark">Admin</span>
 							</a>
 							<div class="dropdown-menu dropdown-menu-end">
-								<a class="dropdown-item" href="pages-sign-in.html">Log out</a>
+								<a class="dropdown-item" href="pages-profile.html"><i class="align-middle me-1" data-feather="user"></i> Profile</a>
+								<div class="dropdown-divider"></div>
+								<a class="dropdown-item" href="index.html">Log out</a>
 							</div>
 						</li>
 					</ul>
@@ -103,21 +111,21 @@
                                     <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addCriteriaModal"><i class="align-middle" data-feather="plus"></i> Tambah Kriteria</button>
 								</div>
 								<div class="card-body">
-                                    <table class="table table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Nama Kriteria</th>
-                                                <th>Bobot (%)</th>
-                                                <th>Deskripsi</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tbody id="criteriaTableBody">
-                                            <!-- Populated by JS -->
-                                        </tbody>
-                                    </table>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover my-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Nama Kriteria</th>
+                                                    <th>Bobot (%)</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="criteriaTableBody">
+                                                <!-- Dynamic Data -->
+                                            </tbody>
+                                        </table>
+                                    </div>
 								</div>
 							</div>
 						</div>
@@ -126,9 +134,23 @@
 				</div>
 			</main>
 
+			<footer class="footer">
+				<div class="container-fluid">
+					<div class="row text-muted">
+						<div class="col-6 text-start">
+							<p class="mb-0">
+								<strong>Sistem Penilaian Kinerja</strong> &copy; 2025
+							</p>
+						</div>
+					</div>
+				</div>
+			</footer>
+		</div>
+	</div>
+
     <!-- Modal Tambah Kriteria -->
-    <div class="modal fade" id="addCriteriaModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+    <div class="modal fade" id="addCriteriaModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Tambah Kriteria Baru</h5>
@@ -142,11 +164,11 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Bobot (%)</label>
-                            <input type="number" class="form-control" name="weight" required placeholder="Contoh: 20">
+                            <input type="number" class="form-control" name="weight" required placeholder="Contoh: 30">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Deskripsi</label>
-                            <textarea class="form-control" name="description" rows="3" placeholder="Penjelasan singkat..."></textarea>
+                            <textarea class="form-control" name="description" placeholder="Penjelasan kriteria"></textarea>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -159,8 +181,8 @@
     </div>
 
     <!-- Modal Edit Kriteria -->
-    <div class="modal fade" id="editCriteriaModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+    <div class="modal fade" id="editCriteriaModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Kriteria</h5>
@@ -177,13 +199,13 @@
                             <label class="form-label">Bobot (%)</label>
                             <input type="number" class="form-control" name="weight" id="editCriteriaWeight" required>
                         </div>
-                        <div class="mb-3">
+                         <div class="mb-3">
                             <label class="form-label">Deskripsi</label>
-                            <textarea class="form-control" name="description" id="editCriteriaDescription" rows="3"></textarea>
+                            <textarea class="form-control" name="description" id="editCriteriaDescription"></textarea>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                            <button type="submit" class="btn btn-primary">Update</button>
                         </div>
                     </form>
                 </div>
@@ -191,132 +213,149 @@
         </div>
     </div>
 
-			<footer class="footer">
-				<div class="container-fluid">
-					<div class="row text-muted">
-						<div class="col-6 text-start">
-							<p class="mb-0">
-								<strong>Sistem Penilaian Kinerja</strong> &copy; 2025
-							</p>
-						</div>
-					</div>
-				</div>
-			</footer>
-		</div>
-	</div>
+    <!-- Modal Detail Kriteria -->
+    <div class="modal fade" id="viewCriteriaModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detail Kriteria</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body m-3">
+                    <div class="mb-3"><strong>Nama Kriteria:</strong> <span id="viewCriteriaName"></span></div>
+                    <div class="mb-3"><strong>Bobot:</strong> <span id="viewCriteriaWeight"></span></div>
+                    <div class="mb-3"><strong>Deskripsi:</strong></div>
+                    <div class="p-2 border rounded bg-light" id="viewCriteriaDescription"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 	<script src="js/app.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Fetch Criteria
-            fetch('http://localhost:3000/api/criteria')
-                .then(response => response.json())
-                .then(data => {
-                    renderTable(data);
-                })
-                .catch(err => console.error('Error fetching criteria:', err));
+            fetchCriteria();
 
-            // Handle Add Criteria
-            document.getElementById('addCriteriaForm').addEventListener('submit', async function(e) {
+            // Add Criteria
+            document.getElementById('addCriteriaForm').addEventListener('submit', function(e) {
                 e.preventDefault();
-                const formData = new FormData(e.target);
+                const formData = new FormData(this);
                 const data = Object.fromEntries(formData.entries());
 
-                try {
-                    const response = await fetch('http://localhost:3000/api/criteria', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
-                    });
-                    
-                    if(response.ok) {
-                        alert('Kriteria berhasil ditambahkan!');
-                        location.reload(); 
+                fetch('/api/criteria', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if(result.error) {
+                        alert('Error: ' + result.error);
                     } else {
-                        alert('Gagal menambahkan kriteria');
+                        alert('Kriteria berhasil ditambahkan');
+                        location.reload();
                     }
-                } catch (error) {
-                    console.error('Error:', error);
-                }
+                })
+                .catch(error => console.error('Error:', error));
             });
 
-            function renderTable(data) {
-                const tableBody = document.getElementById('criteriaTableBody');
-                if (data.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="3" class="text-center">Tidak ada data kriteria</td></tr>';
-                    return;
-                }
-                
-                tableBody.innerHTML = '';
-                data.forEach(item => {
-                    const row = `
-                        <tr>
-                            <td>${item.kriteria_id}</td>
-                            <td>${item.nama_kriteria}</td>
-                            <td>${item.bobot}%</td>
-                            <td>${item.deskripsi || '-'}</td>
-                            <td>
-                                <button class="btn btn-sm btn-primary" onclick="window.editCriteria(${item.kriteria_id}, '${item.nama_kriteria}', ${item.bobot}, '${item.deskripsi || ''}')">Edit</button>
-                                <button class="btn btn-sm btn-danger" onclick="window.deleteCriteria(${item.kriteria_id})">Hapus</button>
-                            </td>
-                        </tr>
-                    `;
-                    tableBody.innerHTML += row;
-                });
-            }
-
-            // Expose functions
-            window.deleteCriteria = async function(id) {
-                if(confirm('Yakin ingin menghapus kriteria ini?')) {
-                    try {
-                        const res = await fetch(`http://localhost:3000/api/criteria/${id}`, { method: 'DELETE' });
-                        if(res.ok) {
-                            alert('Kriteria berhasil dihapus');
-                            location.reload();
-                        } else {
-                            alert('Gagal menghapus');
-                        }
-                    } catch (e) {
-                        console.error(e);
-                    }
-                }
-            }
-
-            window.editCriteria = function(id, name, weight, description) {
-                document.getElementById('editCriteriaId').value = id;
-                document.getElementById('editCriteriaName').value = name;
-                document.getElementById('editCriteriaWeight').value = weight;
-                document.getElementById('editCriteriaDescription').value = description;
-                
-                var myModal = new bootstrap.Modal(document.getElementById('editCriteriaModal'));
-                myModal.show();
-            }
-
-            // Handle Edit Submit
-            document.getElementById('editCriteriaForm').addEventListener('submit', async function(e) {
+            // Edit Criteria
+            document.getElementById('editCriteriaForm').addEventListener('submit', function(e) {
                 e.preventDefault();
-                const formData = new FormData(e.target);
-                const data = Object.fromEntries(formData.entries());
-                const id = data.id;
+                const id = document.getElementById('editCriteriaId').value;
+                const name = document.getElementById('editCriteriaName').value;
+                const weight = document.getElementById('editCriteriaWeight').value;
+                const description = document.getElementById('editCriteriaDescription').value;
 
-                try {
-                    const response = await fetch(`http://localhost:3000/api/criteria/${id}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
-                    });
-                    
-                    if(response.ok) {
-                        alert('Kriteria berhasil diperbarui!');
-                        location.reload(); 
+                fetch(`/api/criteria/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, weight, description })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if(result.error) {
+                        alert('Error: ' + result.error);
                     } else {
-                        alert('Gagal memperbarui');
+                        alert('Kriteria berhasil diupdate');
+                        location.reload();
                     }
-                } catch (error) {
-                    console.error('Error:', error);
-                }
+                })
+                .catch(error => console.error('Error:', error));
             });
         });
+
+        function fetchCriteria() {
+            fetch('/api/criteria')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('criteriaTableBody');
+                    window.criteriaData = data;
+                    
+                    if (data.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="4" class="text-center">Belum ada kriteria</td></tr>';
+                        return;
+                    }
+
+                    tableBody.innerHTML = '';
+                    data.forEach((item) => {
+                        const safeName = item.nama_kriteria.replace(/'/g, "\\'");
+                        const safeDesc = item.deskripsi ? item.deskripsi.replace(/'/g, "\\'") : '';
+                        
+                        const row = `
+                            <tr>
+                                <td>${item.kriteria_id}</td>
+                                <td>${item.nama_kriteria}</td>
+                                <td>${item.bobot}%</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            ...
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#" onclick="window.viewCriteria(${item.kriteria_id})">Lihat Informasi Detail</a></li>
+                                            <li><a class="dropdown-item" href="#" onclick="window.editCriteria(${item.kriteria_id}, '${safeName}', ${item.bobot}, '${safeDesc}')">Edit</a></li>
+                                            <li><a class="dropdown-item text-danger" href="#" onclick="window.deleteCriteria(${item.kriteria_id})">Hapus</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                        tableBody.innerHTML += row;
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        window.viewCriteria = function(id) {
+            const item = window.criteriaData.find(c => c.kriteria_id === id);
+            if (item) {
+                document.getElementById('viewCriteriaName').innerText = item.nama_kriteria;
+                document.getElementById('viewCriteriaWeight').innerText = item.bobot + '%';
+                document.getElementById('viewCriteriaDescription').innerText = item.deskripsi || '-';
+                new bootstrap.Modal(document.getElementById('viewCriteriaModal')).show();
+            }
+        }
+
+        window.editCriteria = function(id, name, weight, description) {
+            document.getElementById('editCriteriaId').value = id;
+            document.getElementById('editCriteriaName').value = name;
+            document.getElementById('editCriteriaWeight').value = weight;
+            document.getElementById('editCriteriaDescription').value = description;
+            new bootstrap.Modal(document.getElementById('editCriteriaModal')).show();
+        }
+
+        window.deleteCriteria = function(id) {
+            if(confirm('Apakah Anda yakin ingin menghapus kriteria ini?')) {
+                fetch(`/api/criteria/${id}`, { method: 'DELETE' })
+                .then(response => response.json())
+                .then(result => {
+                    alert(result.message);
+                    location.reload();
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
     </script>
 </body>
 
