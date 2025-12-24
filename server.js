@@ -11,7 +11,13 @@ const PORT = 3000;
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static('static')); // Serve static files for simple deployment
+app.use(express.static('static', {
+    etag: false,
+    lastModified: false,
+    setHeaders: (res, path) => {
+        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    }
+})); // Serve static files for simple deployment
 
 // Database Connection
 const db = mysql.createPool({
