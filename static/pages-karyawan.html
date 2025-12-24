@@ -16,6 +16,11 @@
 
 	<link href="css/app.css" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        .dropdown-toggle::after {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -108,25 +113,22 @@
 							<div class="card">
 								<div class="card-header d-flex justify-content-between align-items-center">
 									<h5 class="card-title mb-0">List Karyawan</h5>
-                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addEmployeeModal"><i class="align-middle" data-feather="plus"></i> Tambah Karyawan</button>
 								</div>
 								<div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover my-0">
-                                            <thead>
-                                                <tr>
-                                                    <th>ID</th>
-                                                    <th>Nama</th>
-                                                    <th>Jabatan</th>
-                                                    <th>Status Aktif</th>
-                                                    <th>Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="employeesTableBody">
-                                                <!-- Dynamic Data -->
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                    <table class="table table-hover my-0">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Nama</th>
+                                                <th>Jabatan</th>
+                                                <th>Status Aktif</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="employeesTableBody">
+                                            <!-- Dynamic Data -->
+                                        </tbody>
+                                    </table>
 								</div>
 							</div>
 						</div>
@@ -148,46 +150,6 @@
 			</footer>
 		</div>
 	</div>
-
-    <!-- Modal Tambah Karyawan -->
-    <div class="modal fade" id="addEmployeeModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Tambah Karyawan Baru</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body m-3">
-                    <form id="addEmployeeForm">
-                        <div class="mb-3">
-                            <label class="form-label">Nama Lengkap</label>
-                            <input type="text" class="form-control" name="name" required placeholder="Nama Lengkap">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-control" name="email" required placeholder="Email">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Password Default</label>
-                            <input type="text" class="form-control" name="password" value="123456" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Tanggal Lahir</label>
-                            <input type="date" class="form-control" name="tanggal_lahir">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Alamat</label>
-                            <textarea class="form-control" name="alamat" placeholder="Alamat lengkap"></textarea>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-primary">Simpan</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Modal Edit Karyawan -->
     <div class="modal fade" id="editEmployeeModal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -257,31 +219,6 @@
         document.addEventListener("DOMContentLoaded", function() {
             fetchEmployees();
 
-            // Handle Add Employee
-            document.getElementById('addEmployeeForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                const data = Object.fromEntries(formData.entries());
-
-                try {
-                    const response = await fetch('/api/employees', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
-                    });
-                    
-                    if(response.ok) {
-                        alert('Karyawan berhasil ditambahkan!');
-                        location.reload(); 
-                    } else {
-                        const res = await response.json();
-                        alert('Gagal: ' + (res.error || 'Server Error'));
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                }
-            });
-
             // Handle Edit Employee
             document.getElementById('editEmployeeForm').addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -292,7 +229,7 @@
                 const tanggal_lahir = document.getElementById('editEmployeeBirthDate').value;
                 const alamat = document.getElementById('editEmployeeAddress').value;
 
-                fetch(`/api/employees/${id}`, {
+                fetch(`http://localhost:3000/api/employees/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, email, password, tanggal_lahir, alamat })
@@ -311,7 +248,7 @@
         });
 
         function fetchEmployees() {
-            fetch('/api/employees')
+            fetch('http://localhost:3000/api/employees')
                 .then(response => response.json())
                 .then(data => {
                     const tableBody = document.getElementById('employeesTableBody');
@@ -324,8 +261,15 @@
                     
                     tableBody.innerHTML = '';
                     data.forEach(emp => {
-                        const statusBadge = emp.status === 'Active' ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>';
+                        const isNonActive = emp.status === 'Non-Active' || emp.status === 'Inactive'; 
+                        const statusBadge = isNonActive 
+                            ? '<span class="badge bg-danger">Non-Active</span>' 
+                            : '<span class="badge bg-success">Active</span>';
                         
+                        const lockText = isNonActive ? 'Buka Kunci Akun' : 'Kunci Akun';
+                        const lockIcon = isNonActive ? 'unlock' : 'lock';
+                        const nextStatus = isNonActive ? 'Active' : 'Non-Active';
+
                         // Safe params for JS calls
                         const safeName = emp.username.replace(/'/g, "\\'");
                         const safeEmail = emp.email.replace(/'/g, "\\'");
@@ -340,13 +284,15 @@
                                 <td>${statusBadge}</td>
                                 <td>
                                     <div class="dropdown">
-                                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            ...
-                                        </button>
+                                        <a href="#" class="text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="align-middle" data-feather="more-horizontal"></i>
+                                        </a>
                                         <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#" onclick="window.viewEmployee(${emp.user_id})">Lihat Informasi Detail</a></li>
-                                            <li><a class="dropdown-item" href="#" onclick="window.editEmployee(${emp.user_id}, '${safeName}', '${safeEmail}', '${safeBirthDate}', '${safeAddress}')">Edit</a></li>
-                                            <li><a class="dropdown-item text-danger" href="#" onclick="window.deleteEmployee(${emp.user_id})">Hapus</a></li>
+                                            <li><a class="dropdown-item" href="pages-karyawan-detail.html?id=${emp.user_id}"><i class="align-middle me-1" data-feather="eye"></i> Lihat Detail</a></li>
+                                            <li><a class="dropdown-item" href="#" onclick="window.editEmployee(${emp.user_id}, '${safeName}', '${safeEmail}', '${safeBirthDate}', '${safeAddress}')"><i class="align-middle me-1" data-feather="edit-2"></i> Edit</a></li>
+                                            <li><a class="dropdown-item" href="#" onclick="window.toggleUserStatus(${emp.user_id}, '${nextStatus}')"><i class="align-middle me-1" data-feather="${lockIcon}"></i> ${lockText}</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-danger" href="#" onclick="window.deleteEmployee(${emp.user_id})"><i class="align-middle me-1" data-feather="trash-2"></i> Hapus</a></li>
                                         </ul>
                                     </div>
                                 </td>
@@ -354,8 +300,33 @@
                         `;
                         tableBody.innerHTML += row;
                     });
+                    feather.replace(); // Render icons
                 })
                 .catch(err => console.error('Error fetching employees:', err));
+        }
+
+        window.toggleUserStatus = async function(id, newStatus) {
+            const action = newStatus === 'Active' ? 'membuka kunci' : 'mengunci';
+            if(confirm(`Apakah Anda yakin ingin ${action} akun ini?`)) {
+                try {
+                    const res = await fetch(`http://localhost:3000/api/employees/${id}/status`, { 
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: newStatus })
+                    });
+                    
+                    if(res.ok) {
+                        // alert('Status berhasil diperbarui');
+                        location.reload();
+                    } else {
+                        const err = await res.json().catch(() => ({}));
+                        alert('Gagal: ' + (err.error || res.statusText));
+                    }
+                } catch (e) {
+                    console.error(e);
+                    alert('Terjadi kesalahan');
+                }
+            }
         }
 
         window.viewEmployee = function(id) {
@@ -388,7 +359,7 @@
         window.deleteEmployee = async function(id) {
             if(confirm('Apakah Anda yakin ingin menghapus karyawan ini? Data yang dihapus tidak dapat dikembalikan.')) {
                 try {
-                    const res = await fetch(`/api/employees/${id}`, { method: 'DELETE' });
+                    const res = await fetch(`http://localhost:3000/api/employees/${id}`, { method: 'DELETE' });
                     const result = await res.json();
                     if(res.ok) {
                         alert(result.message);

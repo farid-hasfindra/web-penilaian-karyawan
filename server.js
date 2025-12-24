@@ -76,6 +76,11 @@ app.post('/api/login', (req, res) => {
             return res.status(401).json({ error: 'Incorrect password' });
         }
 
+        // CHECK STATUS: If Non-Active, block login (Only if password is correct)
+        if (user.status === 'Non-Active' || user.status === 'Inactive') {
+            return res.status(401).json({ error: 'Akun anda sedang dikunci' });
+        }
+
         // Return user info sans password
         res.json({
             id: user.user_id,
@@ -88,7 +93,7 @@ app.post('/api/login', (req, res) => {
 
 // 2. Register Endpoint
 app.post('/api/register', async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, tanggal_lahir, alamat, tanggal_bergabung } = req.body;
 
     // Default role = 2 (Karyawan)
     const roleId = 2;
@@ -97,12 +102,15 @@ app.post('/api/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Insert into users
-        const query = 'INSERT INTO users (username, email, password, role_id, status) VALUES (?, ?, ?, ?, ?)';
+        const query = 'INSERT INTO users (username, email, password, role_id, status, tanggal_lahir, alamat, tanggal_bergabung) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
 
-        db.query(query, [name, email, hashedPassword, roleId, 'Active'], (err, result) => {
+        db.query(query, [name, email, hashedPassword, roleId, 'Active', tanggal_lahir, alamat, tanggal_bergabung], (err, result) => {
             if (err) {
                 if (err.code === 'ER_DUP_ENTRY') {
-                    return res.status(400).json({ error: 'Email already exists' });
+                    if (err.message.includes('email')) {
+                        return res.status(400).json({ error: 'Email already exists' });
+                    }
+                    return res.status(400).json({ error: 'Duplicate data entry' });
                 }
                 return res.status(500).json({ error: err.message });
             }
@@ -180,7 +188,7 @@ app.get('/api/assessments/latest', (req, res) => {
 app.get('/api/employees', (req, res) => {
     // Get all users with role 'Karyawan'
     const query = `
-        SELECT u.user_id, u.username, u.email, u.status, u.created_at, u.tanggal_lahir, u.alamat, r.role_name 
+        SELECT u.user_id, u.username, u.email, u.status, u.tanggal_lahir, u.alamat, u.tanggal_bergabung, r.role_name 
         FROM users u 
         JOIN roles r ON u.role_id = r.role_id 
         WHERE r.role_name = 'Karyawan'
@@ -193,14 +201,19 @@ app.get('/api/employees', (req, res) => {
 
 // 5b. CREATE Employee
 app.post('/api/employees', async (req, res) => {
-    const { name, email, password, tanggal_lahir, alamat } = req.body;
+    const { name, email, password, tanggal_lahir, alamat, tanggal_bergabung } = req.body;
     const roleId = 2; // Karyawan
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const query = 'INSERT INTO users (username, email, password, role_id, status, tanggal_lahir, alamat) VALUES (?, ?, ?, ?, ?, ?, ?)';
-        db.query(query, [name, email, hashedPassword, roleId, 'Active', tanggal_lahir || null, alamat || null], (err, result) => {
-            if (err) return res.status(500).json({ error: err.message });
+        const query = 'INSERT INTO users (username, email, password, role_id, status, tanggal_lahir, alamat, tanggal_bergabung) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+        db.query(query, [name, email, hashedPassword, roleId, 'Active', tanggal_lahir || null, alamat || null, tanggal_bergabung || null], (err, result) => {
+            if (err) {
+                if (err.code === 'ER_DUP_ENTRY') {
+                    if (err.message.includes('email')) return res.status(400).json({ error: 'Email already exists' });
+                }
+                return res.status(500).json({ error: err.message });
+            }
             res.json({ message: 'Employee added successfully', id: result.insertId });
         });
     } catch (e) {
@@ -221,10 +234,10 @@ app.delete('/api/employees/:id', (req, res) => {
 // 5d. UPDATE Employee
 app.put('/api/employees/:id', async (req, res) => {
     const userId = req.params.id;
-    const { name, email, password, tanggal_lahir, alamat } = req.body;
+    const { name, email, password, tanggal_lahir, alamat, tanggal_bergabung } = req.body;
 
-    let query = 'UPDATE users SET username = ?, email = ?, tanggal_lahir = ?, alamat = ?';
-    let params = [name, email, tanggal_lahir || null, alamat || null];
+    let query = 'UPDATE users SET username = ?, email = ?, tanggal_lahir = ?, alamat = ?, tanggal_bergabung = ?';
+    let params = [name, email, tanggal_lahir || null, alamat || null, tanggal_bergabung || null];
 
     if (password && password.trim() !== "") {
         try {
@@ -240,8 +253,25 @@ app.put('/api/employees/:id', async (req, res) => {
     params.push(userId);
 
     db.query(query, params, (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
+        if (err) {
+            if (err.code === 'ER_DUP_ENTRY') {
+                if (err.message.includes('email')) return res.status(400).json({ error: 'Email already exists' });
+            }
+            return res.status(500).json({ error: err.message });
+        }
         res.json({ message: 'User updated successfully' });
+    });
+});
+
+// 5e. UPDATE Employee Status (Lock/Unlock)
+app.put('/api/employees/:id/status', (req, res) => {
+    const userId = req.params.id;
+    const { status } = req.body; // 'Active' or 'Non-Active'
+
+    const query = 'UPDATE users SET status = ? WHERE user_id = ?';
+    db.query(query, [status, userId], (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: `User status updated to ${status}` });
     });
 });
 

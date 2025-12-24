@@ -16,6 +16,11 @@
 
 	<link href="css/app.css" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        .dropdown-toggle::after {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -111,21 +116,19 @@
                                     <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addCriteriaModal"><i class="align-middle" data-feather="plus"></i> Tambah Kriteria</button>
 								</div>
 								<div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover my-0">
-                                            <thead>
-                                                <tr>
-                                                    <th>ID</th>
-                                                    <th>Nama Kriteria</th>
-                                                    <th>Bobot (%)</th>
-                                                    <th>Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="criteriaTableBody">
-                                                <!-- Dynamic Data -->
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                    <table class="table table-hover my-0">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Nama Kriteria</th>
+                                                <th>Bobot (%)</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="criteriaTableBody">
+                                            <!-- Dynamic Data -->
+                                        </tbody>
+                                    </table>
 								</div>
 							</div>
 						</div>
@@ -242,7 +245,7 @@
                 const formData = new FormData(this);
                 const data = Object.fromEntries(formData.entries());
 
-                fetch('/api/criteria', {
+                fetch('http://localhost:3000/api/criteria', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -267,7 +270,7 @@
                 const weight = document.getElementById('editCriteriaWeight').value;
                 const description = document.getElementById('editCriteriaDescription').value;
 
-                fetch(`/api/criteria/${id}`, {
+                fetch(`http://localhost:3000/api/criteria/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, weight, description })
@@ -286,7 +289,7 @@
         });
 
         function fetchCriteria() {
-            fetch('/api/criteria')
+            fetch('http://localhost:3000/api/criteria')
                 .then(response => response.json())
                 .then(data => {
                     const tableBody = document.getElementById('criteriaTableBody');
@@ -309,13 +312,14 @@
                                 <td>${item.bobot}%</td>
                                 <td>
                                     <div class="dropdown">
-                                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            ...
-                                        </button>
+                                        <a href="#" class="text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="align-middle" data-feather="more-horizontal"></i>
+                                        </a>
                                         <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#" onclick="window.viewCriteria(${item.kriteria_id})">Lihat Informasi Detail</a></li>
-                                            <li><a class="dropdown-item" href="#" onclick="window.editCriteria(${item.kriteria_id}, '${safeName}', ${item.bobot}, '${safeDesc}')">Edit</a></li>
-                                            <li><a class="dropdown-item text-danger" href="#" onclick="window.deleteCriteria(${item.kriteria_id})">Hapus</a></li>
+                                            <li><a class="dropdown-item" href="#" onclick="window.viewCriteria(${item.kriteria_id})"><i class="align-middle me-1" data-feather="eye"></i> Lihat Detail</a></li>
+                                            <li><a class="dropdown-item" href="#" onclick="window.editCriteria(${item.kriteria_id}, '${safeName}', ${item.bobot}, '${safeDesc}')"><i class="align-middle me-1" data-feather="edit-2"></i> Edit</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-danger" href="#" onclick="window.deleteCriteria(${item.kriteria_id})"><i class="align-middle me-1" data-feather="trash-2"></i> Hapus</a></li>
                                         </ul>
                                     </div>
                                 </td>
@@ -323,6 +327,7 @@
                         `;
                         tableBody.innerHTML += row;
                     });
+                    feather.replace(); // Render icons
                 })
                 .catch(error => console.error('Error:', error));
         }
@@ -347,7 +352,7 @@
 
         window.deleteCriteria = function(id) {
             if(confirm('Apakah Anda yakin ingin menghapus kriteria ini?')) {
-                fetch(`/api/criteria/${id}`, { method: 'DELETE' })
+                fetch(`http://localhost:3000/api/criteria/${id}`, { method: 'DELETE' })
                 .then(response => response.json())
                 .then(result => {
                     alert(result.message);
